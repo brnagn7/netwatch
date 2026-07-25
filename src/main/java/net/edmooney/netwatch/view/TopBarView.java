@@ -6,6 +6,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.NetworkAdapter;
 
 public class TopBarView extends HBox {
@@ -21,8 +22,14 @@ public class TopBarView extends HBox {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
+        NetWatchController controller = new NetWatchController();
+
         ComboBox<NetworkAdapter> adapterComboBox = new ComboBox<>();
         adapterComboBox.setPrefWidth(320);
+
+        adapterComboBox.getItems().addAll(
+                controller.getAvailableAdapters()
+        );
 
         Button startButton = new Button("Start");
         startButton.getStyleClass().add("start-button");
