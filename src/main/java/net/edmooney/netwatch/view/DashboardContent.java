@@ -5,19 +5,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import net.edmooney.netwatch.view.components.DashboardCard;
 
-public class DashboardPane extends VBox {
+public class DashboardContent extends VBox {
 
-    public VBox createView() {
+    public DashboardContent() {
 
-        VBox dashboard = new VBox();
-
-        dashboard.getStyleClass().add("content-area");
+        setSpacing(20);
+        getStyleClass().add("content-area");
 
         Label title = new Label("Dashboard");
         title.getStyleClass().add("dashboard-title");
 
         GridPane grid = new GridPane();
-
         grid.setHgap(20);
         grid.setVgap(20);
 
@@ -31,8 +29,6 @@ public class DashboardPane extends VBox {
         grid.add(hostsCard, 0, 1);
         grid.add(portsCard, 1, 1);
 
-        dashboard.getChildren().addAll(title, grid);
-
-        return dashboard;
+        getChildren().addAll(title, grid);
     }
 }

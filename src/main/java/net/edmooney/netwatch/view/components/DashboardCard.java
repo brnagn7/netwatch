@@ -6,13 +6,7 @@ import javafx.scene.layout.VBox;
 
 public class DashboardCard extends VBox {
 
-    private final String title;
-    private final String value;
-
     public DashboardCard(String title, String value) {
-
-        this.title = title;
-        this.value = value;
 
         setSpacing(10);
         setPadding(new Insets(15));

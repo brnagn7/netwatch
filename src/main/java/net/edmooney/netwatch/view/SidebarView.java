@@ -3,14 +3,12 @@ package net.edmooney.netwatch.view;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 
-public class SidebarView {
+public class SidebarView extends VBox {
 
-    public VBox createView() {
+    public SidebarView() {
 
-        VBox sidebar = new VBox();
-
-        sidebar.setPrefWidth(250);
-        sidebar.getStyleClass().add("side-bar");
+        setPrefWidth(250);
+        getStyleClass().add("side-bar");
 
         Button dashboardButton = new Button("Dashboard");
         Button interfacesButton = new Button("Interfaces");
@@ -24,14 +22,12 @@ public class SidebarView {
         historyButton.getStyleClass().add("sidebar-button");
         settingsButton.getStyleClass().add("sidebar-button");
 
-        sidebar.getChildren().addAll(
+        getChildren().addAll(
                 dashboardButton,
                 interfacesButton,
                 hostsButton,
                 historyButton,
                 settingsButton
         );
-
-        return sidebar;
     }
 }
