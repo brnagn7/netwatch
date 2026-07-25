@@ -8,21 +8,12 @@ import java.util.Enumeration;
 import java.util.List;
 
 /**
- * Responsible for discovering network resources.
+ * Discovers the network adapters available on the local machine.
+ *
+ * @return a list of discovered network adapters
  */
 public class NetworkDiscoveryService {
 
-    /**
-     * findAdapters()
-     * │
-     * ├── create empty list
-     * ├── find adapter #1
-     * ├── add it to the list
-     * ├── find adapter #2
-     * ├── add it to the list
-     * └── return the completed list
-     * @return
-     */
     public List<NetworkAdapter> findAdapters() {
 
         List<NetworkAdapter> adapters = new ArrayList<>();
@@ -35,15 +26,17 @@ public class NetworkDiscoveryService {
 
                 NetworkInterface networkInterface = interfaces.nextElement();
 
-                NetworkAdapter adapter = new NetworkAdapter(
-                        networkInterface.getName(),
-                        networkInterface.getDisplayName(),
-                        networkInterface.isUp(),
-                        networkInterface.isLoopback()
-                );
+                if (shouldInclude(networkInterface)) {
 
-                adapters.add(adapter);
+                    NetworkAdapter adapter = new NetworkAdapter(
+                            networkInterface.getName(),
+                            networkInterface.getDisplayName(),
+                            networkInterface.isUp(),
+                            networkInterface.isLoopback()
+                    );
 
+                    adapters.add(adapter);
+                }
             }
 
         } catch (SocketException e) {
@@ -51,5 +44,10 @@ public class NetworkDiscoveryService {
         }
 
         return adapters;
+    }
+
+    private boolean shouldInclude(NetworkInterface networkInterface) {
+
+        return true;
     }
 }
