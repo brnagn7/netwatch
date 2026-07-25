@@ -36,4 +36,9 @@ public class NetworkAdapter {
     public boolean isLoopback() {
         return loopback;
     }
+
+    @Override
+    public String toString() {
+        return displayName;
+    }
 }
