@@ -5,7 +5,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import net.edmooney.netwatch.view.components.DashboardCard;
 
-public class DashboardPane {
+public class DashboardPane extends VBox {
 
     public VBox createView() {
 
@@ -21,13 +21,15 @@ public class DashboardPane {
         grid.setHgap(20);
         grid.setVgap(20);
 
-        DashboardCard cardFactory = new DashboardCard();
+        DashboardCard uploadCard = new DashboardCard("Upload", "0 Mbps");
+        DashboardCard downloadCard = new DashboardCard("Download", "0 Mbps");
+        DashboardCard hostsCard = new DashboardCard("Connected Hosts", "0");
+        DashboardCard portsCard = new DashboardCard("Active Ports", "0");
 
-        grid.add(cardFactory.createCard("Upload", "0 Mbps"), 0, 0);
-        grid.add(cardFactory.createCard("Download", "0 Mbps"), 1, 0);
-
-        grid.add(cardFactory.createCard("Connected Hosts", "0"), 0, 1);
-        grid.add(cardFactory.createCard("Active Ports", "0"), 1, 1);
+        grid.add(uploadCard, 0, 0);
+        grid.add(downloadCard, 1, 0);
+        grid.add(hostsCard, 0, 1);
+        grid.add(portsCard, 1, 1);
 
         dashboard.getChildren().addAll(title, grid);
 
