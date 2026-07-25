@@ -13,7 +13,9 @@ public class NetWatchApplication extends Application {
         StackPane root = new StackPane();
 
         Scene scene = new Scene(root, 1400, 900);
-
+        scene.getStylesheets().add(
+                getClass().getResource("/css/netwatch.css").toExternalForm()
+        );
         stage.setTitle("NetWatch");
         stage.setScene(scene);
         stage.setMinWidth(1200);
