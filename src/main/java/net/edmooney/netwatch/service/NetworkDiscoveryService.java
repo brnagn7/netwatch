@@ -35,6 +35,15 @@ public class NetworkDiscoveryService {
 
                 NetworkInterface networkInterface = interfaces.nextElement();
 
+                NetworkAdapter adapter = new NetworkAdapter(
+                        networkInterface.getName(),
+                        networkInterface.getDisplayName(),
+                        networkInterface.isUp(),
+                        networkInterface.isLoopback()
+                );
+
+                adapters.add(adapter);
+
             }
 
         } catch (SocketException e) {
