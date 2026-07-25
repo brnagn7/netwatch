@@ -3,6 +3,7 @@ package net.edmooney.netwatch.view;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.service.NetworkDiscoveryService;
 
@@ -13,9 +14,9 @@ public class NetWatchApplication extends Application {
 
         MainLayout mainLayout = new MainLayout();
 
-        NetworkDiscoveryService discovery = new NetworkDiscoveryService();
+        NetWatchController controller = new NetWatchController();
 
-        for (NetworkAdapter adapter : discovery.findAdapters()) {
+        for (NetworkAdapter adapter : controller.getAvailableAdapters()) {
 
             System.out.println("-------------------------");
             System.out.println("Name: " + adapter.getName());
