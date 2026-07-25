@@ -1,8 +1,6 @@
 package net.edmooney.netwatch.view;
-
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 
 public class DashboardView {
 
@@ -20,14 +18,6 @@ public class DashboardView {
         root.setBottom(createStatusBar());
 
         return root;
-    }
-
-    private VBox createDashboard() {
-
-        VBox dashboard = new VBox();
-        dashboard.getStyleClass().add("content-area");
-
-        return dashboard;
     }
 
     private HBox createStatusBar() {

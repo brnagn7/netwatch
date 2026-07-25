@@ -74,3 +74,21 @@
     -fx-font-weight: bold;
     -fx-text-fill: white;
 }
+
+.dashboard-card {
+    -fx-background-color: #162033;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #253247;
+}
+
+.card-title {
+    -fx-text-fill: #22D3EE;
+    -fx-font-size: 14px;
+}
+
+.card-value {
+    -fx-text-fill: white;
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
