@@ -1,3 +1,45 @@
 .root {
     -fx-background-color: #0F172A;
 }
+
+.top-bar {
+    -fx-background-color: #162033;
+}
+
+.side-bar {
+    -fx-background-color: #131C2E;
+}
+
+.content-area {
+    -fx-background-color: #0F172A;
+}
+
+.status-bar {
+    -fx-background-color: #162033;
+}
+
+.top-bar {
+    -fx-background-color: #162033;
+    -fx-padding: 15;
+    -fx-alignment: center-left;
+    -fx-spacing: 15;
+}
+
+.title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #FBBF24;
+}
+
+.interface-label {
+    -fx-text-fill: #22D3EE;
+    -fx-font-size: 14px;
+}
+
+.start-button {
+    -fx-background-color: #22D3EE;
+    -fx-text-fill: black;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 8 18;
+}

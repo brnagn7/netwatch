@@ -3,6 +3,7 @@ package net.edmooney.netwatch.view;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class NetWatchApplication extends Application {
@@ -10,8 +11,8 @@ public class NetWatchApplication extends Application {
     @Override
     public void start(Stage stage) {
 
-        StackPane root = new StackPane();
-
+        DashboardView dashboardView = new DashboardView();
+        BorderPane root = dashboardView.createView();
         Scene scene = new Scene(root, 1400, 900);
         scene.getStylesheets().add(
                 getClass().getResource("/css/netwatch.css").toExternalForm()
