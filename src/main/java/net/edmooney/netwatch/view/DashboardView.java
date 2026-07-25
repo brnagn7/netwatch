@@ -11,22 +11,15 @@ public class DashboardView {
         BorderPane root = new BorderPane();
 
         TopBarView topBar = new TopBarView();
+        SidebarView sidebarView = new SidebarView();
+        DashboardPane dashboardPane = new DashboardPane();
 
         root.setTop(topBar.createView());
-        root.setLeft(createSidebar());
-        root.setCenter(createDashboard());
+        root.setLeft(sidebarView.createView());
+        root.setCenter(dashboardPane.createView());
         root.setBottom(createStatusBar());
 
         return root;
-    }
-
-    private VBox createSidebar() {
-
-        VBox sidebar = new VBox();
-        sidebar.setPrefWidth(250);
-        sidebar.getStyleClass().add("side-bar");
-
-        return sidebar;
     }
 
     private VBox createDashboard() {

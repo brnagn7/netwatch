@@ -43,3 +43,34 @@
     -fx-background-radius: 6;
     -fx-padding: 8 18;
 }
+
+.side-bar {
+    -fx-background-color: #131C2E;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-alignment: center-left;
+    -fx-pref-width: 210;
+    -fx-padding: 10 15;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #1E293B;
+    -fx-text-fill: #22D3EE;
+}
+
+.content-area {
+    -fx-background-color: #0F172A;
+    -fx-padding: 25;
+}
+
+.dashboard-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
