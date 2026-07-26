@@ -11,7 +11,7 @@ import net.edmooney.netwatch.model.NetworkAdapter;
 
 public class TopBarView extends HBox {
 
-    public TopBarView() {
+    public TopBarView(NetWatchController controller) {
 
         setPrefHeight(70);
         getStyleClass().add("top-bar");
@@ -21,8 +21,6 @@ public class TopBarView extends HBox {
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-
-        NetWatchController controller = new NetWatchController();
 
         ComboBox<NetworkAdapter> adapterComboBox = new ComboBox<>();
         adapterComboBox.setPrefWidth(320);

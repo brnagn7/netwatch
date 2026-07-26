@@ -5,16 +5,15 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.NetworkAdapter;
-import net.edmooney.netwatch.service.NetworkDiscoveryService;
 
 public class NetWatchApplication extends Application {
 
     @Override
     public void start(Stage stage) {
 
-        MainLayout mainLayout = new MainLayout();
-
         NetWatchController controller = new NetWatchController();
+
+        MainLayout mainLayout = new MainLayout(controller);
 
         for (NetworkAdapter adapter : controller.getAvailableAdapters()) {
 
