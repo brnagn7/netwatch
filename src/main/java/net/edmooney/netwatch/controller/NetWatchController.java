@@ -1,6 +1,7 @@
 package net.edmooney.netwatch.controller;
 
 import net.edmooney.netwatch.model.NetworkAdapter;
+import net.edmooney.netwatch.model.TrafficSnapshot;
 import net.edmooney.netwatch.service.NetworkDiscoveryService;
 import net.edmooney.netwatch.service.NetworkMonitorService;
 
@@ -33,6 +34,10 @@ public class NetWatchController {
 
     public boolean isMonitoring() {
         return monitorService.isMonitoring();
+    }
+
+    public TrafficSnapshot collectSnapshot() {
+        return monitorService.collectSnapshot();
     }
 
 }

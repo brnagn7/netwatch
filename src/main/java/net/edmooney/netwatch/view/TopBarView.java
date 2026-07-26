@@ -42,6 +42,7 @@ public class TopBarView extends HBox {
             if (controller.isMonitoring()) {
 
                 controller.stopMonitoring();
+
                 startButton.setText("Start");
 
             } else {
@@ -49,7 +50,7 @@ public class TopBarView extends HBox {
                 controller.startMonitoring();
                 startButton.setText("Stop");
             }
-
+            System.out.println(controller.collectSnapshot());
         });
 
         getChildren().addAll(

@@ -6,6 +6,8 @@ import javafx.scene.layout.VBox;
 
 public class DashboardCard extends VBox {
 
+    private final Label valueLabel;
+
     public DashboardCard(String title, String value) {
 
         setSpacing(10);
@@ -17,9 +19,13 @@ public class DashboardCard extends VBox {
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("card-title");
 
-        Label valueLabel = new Label(value);
+        valueLabel = new Label(value);
         valueLabel.getStyleClass().add("card-value");
 
         getChildren().addAll(titleLabel, valueLabel);
+    }
+
+    public void setValue(String value) {
+        valueLabel.setText(value);
     }
 }
