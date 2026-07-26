@@ -29,8 +29,28 @@ public class TopBarView extends HBox {
                 controller.getAvailableAdapters()
         );
 
+        // Select the first adapter if one exists
+        if (!adapterComboBox.getItems().isEmpty()) {
+            adapterComboBox.getSelectionModel().selectFirst();
+        }
+
         Button startButton = new Button("Start");
         startButton.getStyleClass().add("start-button");
+
+        startButton.setOnAction(event -> {
+
+            if (controller.isMonitoring()) {
+
+                controller.stopMonitoring();
+                startButton.setText("Start");
+
+            } else {
+
+                controller.startMonitoring();
+                startButton.setText("Stop");
+            }
+
+        });
 
         getChildren().addAll(
                 title,

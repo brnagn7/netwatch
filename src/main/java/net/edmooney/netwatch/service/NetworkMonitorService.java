@@ -15,7 +15,7 @@ public class NetworkMonitorService {
         monitoring = false;
     }
 
-    public boolean isRunning() {
+    public boolean isMonitoring() {
         return monitoring;
     }
 }
