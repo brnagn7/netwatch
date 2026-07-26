@@ -15,9 +15,12 @@ public class MainLayout {
 
         BorderPane root = new BorderPane();
 
+        DashboardContent dashboard = new DashboardContent();
+        dashboard.update(controller.collectSnapshot());
+
         root.setTop(new TopBarView(controller));
         root.setLeft(new SidebarView());
-        root.setCenter(new DashboardContent());
+        root.setCenter(dashboard);
 
         return root;
     }
