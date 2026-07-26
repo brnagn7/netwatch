@@ -11,7 +11,8 @@ import net.edmooney.netwatch.model.NetworkAdapter;
 
 public class TopBarView extends HBox {
 
-    public TopBarView(NetWatchController controller) {
+    public TopBarView(NetWatchController controller,
+                      DashboardContent dashboard) {
 
         setPrefHeight(70);
         getStyleClass().add("top-bar");
@@ -48,6 +49,7 @@ public class TopBarView extends HBox {
             } else {
 
                 controller.startMonitoring();
+                dashboard.update(controller.collectSnapshot());
                 startButton.setText("Stop");
             }
             System.out.println(controller.collectSnapshot());

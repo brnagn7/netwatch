@@ -18,7 +18,9 @@ public class MainLayout {
         DashboardContent dashboard = new DashboardContent();
         dashboard.update(controller.collectSnapshot());
 
-        root.setTop(new TopBarView(controller));
+        dashboard.update(controller.collectSnapshot());
+
+        root.setTop(new TopBarView(controller, dashboard));
         root.setLeft(new SidebarView());
         root.setCenter(dashboard);
 
