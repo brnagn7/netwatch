@@ -5,17 +5,17 @@ package net.edmooney.netwatch.service;
  */
 public class NetworkMonitorService {
 
-    private boolean running;
+    private boolean monitoring;
 
     public void start() {
-        running = true;
+        monitoring = true;
     }
 
     public void stop() {
-        running = false;
+        monitoring = false;
     }
 
     public boolean isRunning() {
-        return running;
+        return monitoring;
     }
 }
