@@ -69,6 +69,10 @@ public class TopBarView extends HBox {
             } else {
 
                 controller.startMonitoring();
+                System.out.println(
+                        "Monitoring: " +
+                                controller.getSelectedMonitoringAdapter().getDisplayName()
+                );
                 dashboard.update(controller.collectSnapshot());
                 timeline.play();
                 startButton.setText("Stop");

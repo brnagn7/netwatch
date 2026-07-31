@@ -48,6 +48,30 @@ public class NetworkDiscoveryService {
 
     private boolean shouldInclude(NetworkInterface networkInterface) {
 
-        return true;
+        try {
+
+            if (!networkInterface.isUp()) {
+                return false;
+            }
+
+            if (networkInterface.isLoopback()) {
+                return false;
+            }
+
+            String name = networkInterface.getDisplayName().toLowerCase();
+
+            if (name.contains("hyper-v")) return false;
+            if (name.contains("vmware")) return false;
+            if (name.contains("virtualbox")) return false;
+            if (name.contains("npcap")) return false;
+            if (name.contains("miniport")) return false;
+            if (name.contains("qos")) return false;
+            if (name.contains("filter")) return false;
+
+            return true;
+
+        } catch (SocketException e) {
+            return false;
+        }
     }
 }

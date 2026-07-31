@@ -19,6 +19,10 @@ public class NetworkMonitorService {
         monitoring = true;
     }
 
+    public NetworkAdapter getAdapter() {
+        return adapter;
+    }
+
     public void stop() {
         monitoring = false;
     }
