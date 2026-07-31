@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.provider.DefaultTrafficProvider;
 import net.edmooney.netwatch.provider.TrafficProvider;
+import net.edmooney.netwatch.provider.TrafficProviderFactory;
+
 import java.time.LocalDateTime;
 /**
  * Monitors traffic on the selected network adapter.
@@ -16,7 +18,7 @@ public class NetworkMonitorService {
     private boolean monitoring;
 
     public NetworkMonitorService() {
-        this.trafficProvider = new DefaultTrafficProvider();
+        this.trafficProvider = TrafficProviderFactory.create();
     }
 
     public void start(NetworkAdapter adapter) {
