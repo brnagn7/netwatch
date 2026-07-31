@@ -8,6 +8,9 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.NetworkAdapter;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class TopBarView extends HBox {
 
@@ -49,6 +52,14 @@ public class TopBarView extends HBox {
             } else {
 
                 controller.startMonitoring();
+                Timeline timeline = new Timeline(
+                        new KeyFrame(Duration.seconds(1), e ->
+                                dashboard.update(controller.collectSnapshot()))
+                );
+
+                timeline.setCycleCount(Timeline.INDEFINITE);
+                timeline.play();
+
                 dashboard.update(controller.collectSnapshot());
                 startButton.setText("Stop");
             }
