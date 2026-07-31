@@ -21,9 +21,7 @@ public class WindowsTrafficProvider implements TrafficProvider {
 
         NetworkIF selectedInterface = null;
 
-        List<NetworkIF> interfaces = hardware.getNetworkIFs();
-
-        for (NetworkIF networkIF : interfaces) {
+        for (NetworkIF networkIF : hardware.getNetworkIFs()) {
 
             networkIF.updateAttributes();
 
@@ -33,22 +31,44 @@ public class WindowsTrafficProvider implements TrafficProvider {
             }
         }
 
-        if (selectedInterface != null) {
+        if (selectedInterface == null) {
 
-            System.out.println("-------------------------");
-            System.out.println("Monitoring: " + selectedInterface.getDisplayName());
-            System.out.println("Bytes Received: " + selectedInterface.getBytesRecv());
-            System.out.println("Bytes Sent: " + selectedInterface.getBytesSent());
-
-        } else {
-
-            System.out.println("Adapter not found: " + adapter.getDisplayName());
+            return new TrafficSnapshot(
+                    LocalDateTime.now(),
+                    0.0,
+                    0.0,
+                    0,
+                    0
+            );
         }
+
+        long currentBytesReceived = selectedInterface.getBytesRecv();
+        long currentBytesSent = selectedInterface.getBytesSent();
+
+        double downloadMbps = 0.0;
+        double uploadMbps = 0.0;
+
+        if (previousBytesReceived >= 0) {
+
+            downloadMbps =
+                    (currentBytesReceived - previousBytesReceived) * 8.0
+                            / 1_000_000.0;
+        }
+
+        if (previousBytesSent >= 0) {
+
+            uploadMbps =
+                    (currentBytesSent - previousBytesSent) * 8.0
+                            / 1_000_000.0;
+        }
+
+        previousBytesReceived = currentBytesReceived;
+        previousBytesSent = currentBytesSent;
 
         return new TrafficSnapshot(
                 LocalDateTime.now(),
-                0.0,
-                0.0,
+                Math.round(uploadMbps * 100.0) / 100.0,
+                Math.round(downloadMbps * 100.0) / 100.0,
                 0,
                 0
         );
