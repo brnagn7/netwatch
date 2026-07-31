@@ -14,6 +14,7 @@ public class NetWatchController {
 
     private final NetworkDiscoveryService discoveryService;
     private final NetworkMonitorService monitorService;
+    private NetworkAdapter selectedAdapter;
 
     public NetWatchController() {
         this.discoveryService = new NetworkDiscoveryService();
@@ -25,7 +26,12 @@ public class NetWatchController {
     }
 
     public void startMonitoring() {
-        monitorService.start();
+
+        if (selectedAdapter == null) {
+            return;
+        }
+
+        monitorService.start(selectedAdapter);
     }
 
     public void stopMonitoring() {
@@ -38,6 +44,14 @@ public class NetWatchController {
 
     public TrafficSnapshot collectSnapshot() {
         return monitorService.collectSnapshot();
+    }
+
+    public void setSelectedAdapter(NetworkAdapter adapter) {
+        selectedAdapter = adapter;
+    }
+
+    public NetworkAdapter getSelectedAdapter() {
+        return selectedAdapter;
     }
 
 }

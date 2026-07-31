@@ -2,16 +2,20 @@ package net.edmooney.netwatch.service;
 
 import net.edmooney.netwatch.model.TrafficSnapshot;
 import java.time.LocalDateTime;
+import net.edmooney.netwatch.model.NetworkAdapter;
 /**
  * Monitors traffic on the selected network adapter.
  */
 public class NetworkMonitorService {
 
+    private NetworkAdapter adapter;
+
     private boolean monitoring;
     private double upload = 10.0;
     private double download = 80.0;
 
-    public void start() {
+    public void start(NetworkAdapter adapter) {
+        this.adapter = adapter;
         monitoring = true;
     }
 

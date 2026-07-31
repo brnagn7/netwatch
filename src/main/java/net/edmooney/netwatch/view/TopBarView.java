@@ -1,18 +1,20 @@
 package net.edmooney.netwatch.view;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
+import javafx.util.Duration;
 import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.NetworkAdapter;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.util.Duration;
 
 public class TopBarView extends HBox {
+
+    private final Timeline timeline;
 
     public TopBarView(NetWatchController controller,
                       DashboardContent dashboard) {
@@ -33,10 +35,25 @@ public class TopBarView extends HBox {
                 controller.getAvailableAdapters()
         );
 
-        // Select the first adapter if one exists
+        adapterComboBox.setOnAction(event ->
+                controller.setSelectedAdapter(
+                        adapterComboBox.getValue()));
+
         if (!adapterComboBox.getItems().isEmpty()) {
             adapterComboBox.getSelectionModel().selectFirst();
+            controller.setSelectedAdapter(
+                    adapterComboBox.getValue()
+            );
         }
+
+
+        timeline = new Timeline(
+                new KeyFrame(
+                        Duration.seconds(1),
+                        event -> dashboard.update(controller.collectSnapshot())
+                )
+        );
+        timeline.setCycleCount(Timeline.INDEFINITE);
 
         Button startButton = new Button("Start");
         startButton.getStyleClass().add("start-button");
@@ -46,24 +63,16 @@ public class TopBarView extends HBox {
             if (controller.isMonitoring()) {
 
                 controller.stopMonitoring();
-
+                timeline.stop();
                 startButton.setText("Start");
 
             } else {
 
                 controller.startMonitoring();
-                Timeline timeline = new Timeline(
-                        new KeyFrame(Duration.seconds(1), e ->
-                                dashboard.update(controller.collectSnapshot()))
-                );
-
-                timeline.setCycleCount(Timeline.INDEFINITE);
-                timeline.play();
-
                 dashboard.update(controller.collectSnapshot());
+                timeline.play();
                 startButton.setText("Stop");
             }
-            System.out.println(controller.collectSnapshot());
         });
 
         getChildren().addAll(
