@@ -3,16 +3,21 @@ package net.edmooney.netwatch.service;
 import net.edmooney.netwatch.model.TrafficSnapshot;
 import java.time.LocalDateTime;
 import net.edmooney.netwatch.model.NetworkAdapter;
+import net.edmooney.netwatch.provider.DefaultTrafficProvider;
+import net.edmooney.netwatch.provider.TrafficProvider;
+import java.time.LocalDateTime;
 /**
  * Monitors traffic on the selected network adapter.
  */
 public class NetworkMonitorService {
 
     private NetworkAdapter adapter;
-
+    private final TrafficProvider trafficProvider;
     private boolean monitoring;
-    private double upload = 10.0;
-    private double download = 80.0;
+
+    public NetworkMonitorService() {
+        this.trafficProvider = new DefaultTrafficProvider();
+    }
 
     public void start(NetworkAdapter adapter) {
         this.adapter = adapter;
@@ -42,15 +47,16 @@ public class NetworkMonitorService {
 
     public TrafficSnapshot collectSnapshot() {
 
-        upload += 0.5;
-        download += 1.0;
+        if (adapter == null) {
+            return new TrafficSnapshot(
+                    LocalDateTime.now(),
+                    0.0,
+                    0.0,
+                    0,
+                    0
+            );
+        }
 
-        return new TrafficSnapshot(
-                LocalDateTime.now(),
-                upload,
-                download,
-                4,
-                18
-        );
+        return trafficProvider.collectSnapshot(adapter);
     }
 }
