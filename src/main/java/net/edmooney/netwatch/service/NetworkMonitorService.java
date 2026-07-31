@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 public class NetworkMonitorService {
 
     private boolean monitoring;
+    private double upload = 10.0;
+    private double download = 80.0;
 
     public void start() {
         monitoring = true;
@@ -23,10 +25,13 @@ public class NetworkMonitorService {
 
     public TrafficSnapshot collectSnapshot() {
 
+        upload += 0.5;
+        download += 1.0;
+
         return new TrafficSnapshot(
                 LocalDateTime.now(),
-                12.5,
-                87.3,
+                upload,
+                download,
                 4,
                 18
         );
