@@ -42,8 +42,8 @@ public class DashboardContent extends VBox {
 
     public void update(TrafficSnapshot snapshot) {
 
-        uploadCard.setValue(snapshot.getUploadMbps() + " Mbps");
-        downloadCard.setValue(snapshot.getDownloadMbps() + " Mbps");
+        uploadCard.setValue(String.format("%.2f Mbps", snapshot.getUploadMbps()));
+        downloadCard.setValue(String.format("%.2f Mbps", snapshot.getDownloadMbps()));
         hostsCard.setValue(String.valueOf(snapshot.getConnectedHosts()));
         portsCard.setValue(String.valueOf(snapshot.getActivePorts()));
     }
