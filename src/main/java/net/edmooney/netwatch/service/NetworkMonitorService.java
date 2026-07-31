@@ -23,6 +23,15 @@ public class NetworkMonitorService {
         return adapter;
     }
 
+    public String getAdapterName() {
+
+        if (adapter == null) {
+            return "";
+        }
+
+        return adapter.getName();
+    }
+
     public void stop() {
         monitoring = false;
     }

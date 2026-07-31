@@ -35,9 +35,6 @@ public class TopBarView extends HBox {
                 controller.getAvailableAdapters()
         );
 
-        adapterComboBox.setOnAction(event ->
-                controller.setSelectedAdapter(
-                        adapterComboBox.getValue()));
 
         if (!adapterComboBox.getItems().isEmpty()) {
             adapterComboBox.getSelectionModel().selectFirst();
@@ -46,13 +43,26 @@ public class TopBarView extends HBox {
             );
         }
 
+        Label adapterLabel = new Label();
+        adapterLabel.getStyleClass().add("interface-label");
+        adapterLabel.setText(
+                adapterComboBox.getValue().getDisplayName()
+        );
+        adapterComboBox.setOnAction(event -> {
 
+            NetworkAdapter adapter = adapterComboBox.getValue();
+
+            controller.setSelectedAdapter(adapter);
+
+            adapterLabel.setText(adapter.getDisplayName());
+        });
         timeline = new Timeline(
                 new KeyFrame(
                         Duration.seconds(1),
                         event -> dashboard.update(controller.collectSnapshot())
                 )
         );
+
         timeline.setCycleCount(Timeline.INDEFINITE);
 
         Button startButton = new Button("Start");
@@ -83,6 +93,7 @@ public class TopBarView extends HBox {
                 title,
                 spacer,
                 adapterComboBox,
+                adapterLabel,
                 startButton
         );
     }
