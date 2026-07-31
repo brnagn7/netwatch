@@ -8,4 +8,6 @@ public interface WindowsNetworkApi extends Library {
     WindowsNetworkApi INSTANCE =
             Native.load("Iphlpapi", WindowsNetworkApi.class);
 
+    int GetNumberOfInterfaces(int[] numberOfInterfaces);
+
 }

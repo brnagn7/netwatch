@@ -10,6 +10,13 @@ public class WindowsTrafficProvider implements TrafficProvider {
     @Override
     public TrafficSnapshot collectSnapshot(NetworkAdapter adapter) {
 
+        int[] count = new int[1];
+
+        int result = WindowsNetworkApi.INSTANCE.GetNumberOfInterfaces(count);
+
+        System.out.println("Result: " + result);
+        System.out.println("Interfaces: " + count[0]);
+
         return new TrafficSnapshot(
                 LocalDateTime.now(),
                 0.0,
