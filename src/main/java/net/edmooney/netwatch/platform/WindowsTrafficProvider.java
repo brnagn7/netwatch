@@ -1,11 +1,11 @@
-package net.edmooney.netwatch.provider;
+package net.edmooney.netwatch.platform;
 
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.model.TrafficSnapshot;
 
 import java.time.LocalDateTime;
 
-public class LinuxTrafficProvider implements TrafficProvider {
+public class WindowsTrafficProvider implements TrafficProvider {
 
     @Override
     public TrafficSnapshot collectSnapshot(NetworkAdapter adapter) {

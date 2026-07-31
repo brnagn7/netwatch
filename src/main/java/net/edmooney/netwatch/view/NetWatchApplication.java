@@ -4,7 +4,7 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import net.edmooney.netwatch.controller.NetWatchController;
-import net.edmooney.netwatch.model.NetworkAdapter;
+import net.edmooney.netwatch.platform.TrafficProviderFactory;
 
 public class NetWatchApplication extends Application {
 
@@ -13,16 +13,12 @@ public class NetWatchApplication extends Application {
 
         NetWatchController controller = new NetWatchController();
 
+        System.out.println(
+                "Platform: " +
+                        TrafficProviderFactory.getCurrentPlatform()
+        );
+
         MainLayout mainLayout = new MainLayout(controller);
-
-        for (NetworkAdapter adapter : controller.getAvailableAdapters()) {
-
-            System.out.println("-------------------------");
-            System.out.println("Name: " + adapter.getName());
-            System.out.println("Display: " + adapter.getDisplayName());
-            System.out.println("Up: " + adapter.isUp());
-            System.out.println("Loopback: " + adapter.isLoopback());
-        }
 
         Scene scene = new Scene(mainLayout.createView(), 1400, 900);
 

@@ -1,11 +1,9 @@
 package net.edmooney.netwatch.service;
 
 import net.edmooney.netwatch.model.TrafficSnapshot;
-import java.time.LocalDateTime;
 import net.edmooney.netwatch.model.NetworkAdapter;
-import net.edmooney.netwatch.provider.DefaultTrafficProvider;
-import net.edmooney.netwatch.provider.TrafficProvider;
-import net.edmooney.netwatch.provider.TrafficProviderFactory;
+import net.edmooney.netwatch.platform.TrafficProvider;
+import net.edmooney.netwatch.platform.TrafficProviderFactory;
 
 import java.time.LocalDateTime;
 /**

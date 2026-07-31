@@ -1,4 +1,4 @@
-package net.edmooney.netwatch.provider;
+package net.edmooney.netwatch.platform;
 
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.model.TrafficSnapshot;
