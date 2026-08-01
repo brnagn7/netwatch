@@ -1,9 +1,7 @@
 package net.edmooney.netwatch.controller;
 
-import javafx.scene.Node;
 import javafx.scene.layout.BorderPane;
-import net.edmooney.netwatch.view.DashboardContent;
-import net.edmooney.netwatch.view.PlaceholderView;
+import net.edmooney.netwatch.view.*;
 
 public class NavigationController {
 
@@ -18,14 +16,14 @@ public class NavigationController {
     }
 
     public void showHosts() {
-        root.setCenter(new PlaceholderView("Hosts"));
+        root.setCenter(new HostsView());
     }
 
     public void showPorts() {
-        root.setCenter(new PlaceholderView("Ports"));
+        root.setCenter(new PortsView());
     }
 
     public void showSettings() {
-        root.setCenter(new PlaceholderView("Settings"));
+        root.setCenter(new SettingsView());
     }
 }

@@ -1,6 +1,7 @@
 package net.edmooney.netwatch.view;
 
 import javafx.scene.layout.BorderPane;
+import net.edmooney.netwatch.controller.NavigationController;
 import net.edmooney.netwatch.controller.NetWatchController;
 
 public class MainLayout {
@@ -20,14 +21,19 @@ public class MainLayout {
 
         dashboard.update(controller.collectSnapshot());
 
+        NavigationController navigationController =
+                new NavigationController(root);
+
         root.setTop(new TopBarView(
                 controller,
                 dashboard,
                 statusBar
         ));
 
-        root.setLeft(new SidebarView());
-        root.setCenter(dashboard);
+        root.setLeft(new SidebarView(navigationController));
+
+        navigationController.showDashboard();
+
         root.setBottom(statusBar);
 
         return root;
