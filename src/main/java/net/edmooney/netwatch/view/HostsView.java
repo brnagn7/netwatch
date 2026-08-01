@@ -8,6 +8,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import net.edmooney.netwatch.model.Host;
 import net.edmooney.netwatch.service.HostDiscoveryService;
+import javafx.beans.property.SimpleStringProperty;
 
 public class HostsView extends BorderPane {
 
@@ -19,18 +20,29 @@ public class HostsView extends BorderPane {
         title.getStyleClass().add("dashboard-title");
 
         TableView<Host> table = new TableView<>();
+        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+        table.setPlaceholder(new Label("No hosts discovered."));
 
         TableColumn<Host, String> ipColumn = new TableColumn<>("IP Address");
         ipColumn.setCellValueFactory(new PropertyValueFactory<>("ipAddress"));
-        ipColumn.setPrefWidth(180);
+        ipColumn.setMinWidth(180);
 
         TableColumn<Host, String> hostColumn = new TableColumn<>("Host Name");
         hostColumn.setCellValueFactory(new PropertyValueFactory<>("hostName"));
-        hostColumn.setPrefWidth(250);
+        hostColumn.setMinWidth(250);
 
-        TableColumn<Host, Boolean> statusColumn = new TableColumn<>("Online");
-        statusColumn.setCellValueFactory(new PropertyValueFactory<>("online"));
-        statusColumn.setPrefWidth(100);
+        TableColumn<Host, String> statusColumn =
+                new TableColumn<>("Status");
+
+        statusColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(
+                        cellData.getValue().isOnline()
+                                ? "Online"
+                                : "Offline"
+                )
+        );
+
+        statusColumn.setMinWidth(120);
 
         table.getColumns().addAll(
                 ipColumn,
@@ -38,9 +50,15 @@ public class HostsView extends BorderPane {
                 statusColumn
         );
 
+        ipColumn.setSortable(true);
+        hostColumn.setSortable(true);
+        statusColumn.setSortable(true);
+        table.getSortOrder().add(ipColumn);
+
         HostDiscoveryService service = new HostDiscoveryService();
 
         table.getItems().addAll(service.discoverHosts());
+        table.sort();
 
         setTop(title);
         setCenter(table);
