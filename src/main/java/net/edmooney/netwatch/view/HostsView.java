@@ -16,7 +16,13 @@ public class HostsView extends BorderPane {
 
         setPadding(new Insets(20));
 
-        Label title = new Label("Connected Hosts");
+        HostDiscoveryService service = new HostDiscoveryService();
+
+        Label title = new Label(
+                "Connected Hosts (" +
+                        service.discoverHosts().size() +
+                        ")"
+        );
         title.getStyleClass().add("dashboard-title");
 
         TableView<Host> table = new TableView<>();
@@ -54,9 +60,6 @@ public class HostsView extends BorderPane {
         hostColumn.setSortable(true);
         statusColumn.setSortable(true);
         table.getSortOrder().add(ipColumn);
-
-        HostDiscoveryService service = new HostDiscoveryService();
-
         table.getItems().addAll(service.discoverHosts());
         table.sort();
 
