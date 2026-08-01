@@ -22,7 +22,7 @@ public class MainLayout {
         dashboard.update(controller.collectSnapshot());
 
         NavigationController navigationController =
-                new NavigationController(root);
+                new NavigationController(root, controller);
 
         root.setTop(new TopBarView(
                 controller,

@@ -35,7 +35,7 @@ public class NetWatchController {
     }
 
     public NetworkAdapter getSelectedMonitoringAdapter() {
-        return monitorService.getAdapter();
+        return selectedAdapter;
     }
 
     public void stopMonitoring() {

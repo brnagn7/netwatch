@@ -28,11 +28,27 @@ public class NetworkDiscoveryService {
 
                 if (shouldInclude(networkInterface)) {
 
+                    String ipv4 = "";
+
+                    Enumeration<java.net.InetAddress> addresses =
+                            networkInterface.getInetAddresses();
+
+                    while (addresses.hasMoreElements()) {
+
+                        java.net.InetAddress address = addresses.nextElement();
+
+                        if (address instanceof java.net.Inet4Address) {
+                            ipv4 = address.getHostAddress();
+                            break;
+                        }
+                    }
+
                     NetworkAdapter adapter = new NetworkAdapter(
                             networkInterface.getName(),
                             networkInterface.getDisplayName(),
                             networkInterface.isUp(),
-                            networkInterface.isLoopback()
+                            networkInterface.isLoopback(),
+                            ipv4
                     );
 
                     adapters.add(adapter);

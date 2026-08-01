@@ -9,16 +9,24 @@ public class NetworkAdapter {
     private final String displayName;
     private final boolean up;
     private final boolean loopback;
+    private final String ipv4Address;
 
     public NetworkAdapter(
             String name,
             String displayName,
             boolean up,
-            boolean loopback){
+            boolean loopback,
+            String ipv4Address
+    ) {
         this.name = name;
         this.displayName = displayName;
         this.up = up;
         this.loopback = loopback;
+        this.ipv4Address = ipv4Address;
+    }
+
+    public String getIpv4Address() {
+        return ipv4Address;
     }
 
     public String getName() {

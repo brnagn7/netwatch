@@ -7,12 +7,16 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.Host;
+import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.service.HostScanTask;
 
 public class HostsView extends BorderPane {
 
-    public HostsView() {
+    public HostsView(NetWatchController controller) {
+
+        System.out.println("HostsView created");
 
         setPadding(new Insets(20));
 
@@ -27,9 +31,17 @@ public class HostsView extends BorderPane {
         ipColumn.setCellValueFactory(new PropertyValueFactory<>("ipAddress"));
         ipColumn.setMinWidth(180);
 
-        TableColumn<Host, String> hostColumn = new TableColumn<>("Host Name");
-        hostColumn.setCellValueFactory(new PropertyValueFactory<>("hostName"));
-        hostColumn.setMinWidth(250);
+        TableColumn<Host, String> hostColumn =
+                new TableColumn<>("Host Name");
+        hostColumn.setCellValueFactory(
+                new PropertyValueFactory<>("hostName"));
+        hostColumn.setMinWidth(220);
+
+        TableColumn<Host, String> macColumn =
+                new TableColumn<>("MAC Address");
+        macColumn.setCellValueFactory(
+                new PropertyValueFactory<>("macAddress"));
+        macColumn.setMinWidth(180);
 
         TableColumn<Host, String> statusColumn = new TableColumn<>("Status");
         statusColumn.setCellValueFactory(cellData ->
@@ -44,6 +56,7 @@ public class HostsView extends BorderPane {
         table.getColumns().addAll(
                 ipColumn,
                 hostColumn,
+                macColumn,
                 statusColumn
         );
 
@@ -53,17 +66,41 @@ public class HostsView extends BorderPane {
 
         table.getSortOrder().add(ipColumn);
 
-        HostScanTask task = new HostScanTask("192.168.1.");
+        NetworkAdapter adapter = controller.getSelectedMonitoringAdapter();
 
-        task.setOnSucceeded(event -> {
-            table.getItems().setAll(task.getValue());
-            title.setText("Connected Hosts (" + task.getValue().size() + ")");
-            table.sort();
-        });
+        if (adapter != null) {
 
-        Thread thread = new Thread(task);
-        thread.setDaemon(true);
-        thread.start();
+            System.out.println("Scanning subnet from: " + adapter.getIpv4Address());
+
+            HostScanTask task = new HostScanTask(adapter);
+
+            task.setOnRunning(event ->
+                    System.out.println("Task running"));
+
+            task.setOnSucceeded(event -> {
+                System.out.println("Task succeeded");
+                table.getItems().setAll(task.getValue());
+                title.setText("Connected Hosts (" + task.getValue().size() + ")");
+                table.sort();
+            });
+
+            task.setOnFailed(event -> {
+                System.out.println("Task failed");
+
+                if (task.getException() != null) {
+                    task.getException().printStackTrace();
+                }
+            });
+
+            Thread thread = new Thread(task);
+            thread.setDaemon(true);
+            thread.start();
+
+        } else {
+
+            System.out.println("No adapter selected.");
+            table.setPlaceholder(new Label("No network adapter selected."));
+        }
 
         setTop(title);
         setCenter(table);
