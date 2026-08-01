@@ -11,22 +11,19 @@ public class SidebarView extends VBox {
         getStyleClass().add("side-bar");
 
         Button dashboardButton = new Button("Dashboard");
-        Button interfacesButton = new Button("Interfaces");
         Button hostsButton = new Button("Hosts");
-        Button historyButton = new Button("History");
+        Button portsButton = new Button("Ports");
         Button settingsButton = new Button("Settings");
 
         dashboardButton.getStyleClass().add("sidebar-button");
-        interfacesButton.getStyleClass().add("sidebar-button");
         hostsButton.getStyleClass().add("sidebar-button");
-        historyButton.getStyleClass().add("sidebar-button");
+        portsButton.getStyleClass().add("sidebar-button");
         settingsButton.getStyleClass().add("sidebar-button");
 
         getChildren().addAll(
                 dashboardButton,
-                interfacesButton,
                 hostsButton,
-                historyButton,
+                portsButton,
                 settingsButton
         );
     }

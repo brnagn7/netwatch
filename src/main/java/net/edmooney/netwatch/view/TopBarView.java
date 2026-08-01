@@ -17,7 +17,8 @@ public class TopBarView extends HBox {
     private final Timeline timeline;
 
     public TopBarView(NetWatchController controller,
-                      DashboardContent dashboard) {
+                      DashboardContent dashboard,
+                      StatusBarView statusBar) {
 
         setPrefHeight(70);
         getStyleClass().add("top-bar");
@@ -31,38 +32,33 @@ public class TopBarView extends HBox {
         ComboBox<NetworkAdapter> adapterComboBox = new ComboBox<>();
         adapterComboBox.setPrefWidth(320);
 
-        adapterComboBox.getItems().addAll(
-                controller.getAvailableAdapters()
-        );
+        adapterComboBox.getItems().addAll(controller.getAvailableAdapters());
 
 
         if (!adapterComboBox.getItems().isEmpty()) {
             adapterComboBox.getSelectionModel().selectFirst();
-            controller.setSelectedAdapter(
-                    adapterComboBox.getValue()
-            );
+
+            NetworkAdapter adapter = adapterComboBox.getValue();
+            controller.setSelectedAdapter(adapter);
+            statusBar.setAdapter(adapter.getDisplayName());
         }
 
-        Label adapterLabel = new Label();
-        adapterLabel.getStyleClass().add("interface-label");
-        adapterLabel.setText(
-                adapterComboBox.getValue().getDisplayName()
-        );
         adapterComboBox.setOnAction(event -> {
 
             NetworkAdapter adapter = adapterComboBox.getValue();
 
-            controller.setSelectedAdapter(adapter);
-
-            adapterLabel.setText(adapter.getDisplayName());
+            if (adapter != null) {
+                controller.setSelectedAdapter(adapter);
+                statusBar.setAdapter(adapter.getDisplayName());
+            }
         });
+
         timeline = new Timeline(
                 new KeyFrame(
                         Duration.seconds(1),
                         event -> dashboard.update(controller.collectSnapshot())
                 )
         );
-
         timeline.setCycleCount(Timeline.INDEFINITE);
 
         Button startButton = new Button("Start");
@@ -74,17 +70,15 @@ public class TopBarView extends HBox {
 
                 controller.stopMonitoring();
                 timeline.stop();
+                statusBar.monitoringStopped();
                 startButton.setText("Start");
 
             } else {
 
                 controller.startMonitoring();
-                System.out.println(
-                        "Monitoring: " +
-                                controller.getSelectedMonitoringAdapter().getDisplayName()
-                );
                 dashboard.update(controller.collectSnapshot());
                 timeline.play();
+                statusBar.monitoringStarted();
                 startButton.setText("Stop");
             }
         });
@@ -93,7 +87,6 @@ public class TopBarView extends HBox {
                 title,
                 spacer,
                 adapterComboBox,
-                adapterLabel,
                 startButton
         );
     }

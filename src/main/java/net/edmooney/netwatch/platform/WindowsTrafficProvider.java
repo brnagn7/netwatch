@@ -65,12 +65,15 @@ public class WindowsTrafficProvider implements TrafficProvider {
         previousBytesReceived = currentBytesReceived;
         previousBytesSent = currentBytesSent;
 
+        int connectedHosts = 0;
+        int activePorts = 0;
+
         return new TrafficSnapshot(
                 LocalDateTime.now(),
                 Math.round(uploadMbps * 100.0) / 100.0,
                 Math.round(downloadMbps * 100.0) / 100.0,
-                0,
-                0
+                connectedHosts,
+                activePorts
         );
     }
 }

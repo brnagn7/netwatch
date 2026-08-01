@@ -92,3 +92,34 @@
     -fx-font-size: 26px;
     -fx-font-weight: bold;
 }
+
+.status-bar {
+    -fx-background-color: #2d2d30;
+    -fx-border-color: #3c3c3c;
+    -fx-border-width: 1 0 0 0;
+    -fx-padding: 8 12;
+    -fx-alignment: center-left;
+}
+
+.status-bar .label {
+    -fx-text-fill: #dcdcdc;
+    -fx-font-size: 12px;
+}
+
+.sidebar-button {
+    -fx-pref-width: 180;
+    -fx-pref-height: 40;
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0 0 15;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #3b3b3b;
+}
+
+.sidebar-button:pressed {
+    -fx-background-color: #4b4b4b;
+}
