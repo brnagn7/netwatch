@@ -18,6 +18,7 @@ import net.edmooney.netwatch.model.Host;
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.service.HostScanTask;
 
+
 public class HostsView extends BorderPane {
 
     private final NetWatchController controller;
@@ -107,6 +108,15 @@ public class HostsView extends BorderPane {
                 new PropertyValueFactory<>("macAddress")
         );
 
+        TableColumn<Host, String> vendorColumn =
+                new TableColumn<>("Vendor");
+
+        vendorColumn.setCellValueFactory(
+                new PropertyValueFactory<>("vendor")
+        );
+
+        vendorColumn.setMinWidth(180);
+
         macColumn.setMinWidth(180);
 
         TableColumn<Host, String> statusColumn =
@@ -126,6 +136,7 @@ public class HostsView extends BorderPane {
                 ipColumn,
                 hostColumn,
                 macColumn,
+                vendorColumn,
                 statusColumn
         );
 

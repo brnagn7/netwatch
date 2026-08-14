@@ -9,6 +9,9 @@ import java.util.List;
 
 public class ArpScannerService {
 
+    private final MacVendorService vendorService =
+            new MacVendorService();
+
     public List<Host> scan(String interfaceIp) {
 
         List<Host> hosts = new ArrayList<>();
@@ -70,10 +73,15 @@ public class ArpScannerService {
                         hostName = "";
                     }
 
+                    String macAddress = parts[1];
+
+                    String vendor = vendorService.lookup(macAddress);
+
                     hosts.add(new Host(
                             ip,
                             hostName,
-                            parts[1],
+                            macAddress,
+                            vendor,
                             true
                     ));
                 }
