@@ -19,17 +19,9 @@ public class HostScanTask extends Task<List<Host>> {
 
     @Override
     protected List<Host> call() {
+        String localIp = adapter.getIpv4Address();
 
-        String ip = adapter.getIpv4Address();
+        return scanner.scan(localIp);
 
-        String subnet = ip.substring(
-                0,
-                ip.lastIndexOf('.') + 1
-        );
-
-        return scanner.scan(
-                subnet,
-                ip
-        );
     }
 }
