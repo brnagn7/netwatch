@@ -50,6 +50,8 @@ public class HostsView extends BorderPane {
     private final DateTimeFormatter timeFormatter =
             DateTimeFormatter.ofPattern("HH:mm:ss");
 
+    private final Label scanStatusLabel = new Label("Ready");
+
     private Instant scanStartTime;
 
     private final VBox loadingBox =
@@ -71,14 +73,19 @@ public class HostsView extends BorderPane {
         scanButton.setOnAction(event ->
                 scanHosts()
         );
+        scanStatusLabel.setStyle(
+                "-fx-font-size: 13px;" +
+                        "-fx-text-fill: #888888;" +
+                        "-fx-padding: 0 0 0 10px;"
+        );
 
         HBox header = new HBox(
                 15,
                 title,
                 scanButton,
-                lastScanLabel
+                lastScanLabel,
+                scanStatusLabel
         );
-
         header.setAlignment(Pos.CENTER_LEFT);
 
         table.setColumnResizePolicy(
@@ -250,6 +257,8 @@ public class HostsView extends BorderPane {
 
         scanStartTime = Instant.now();
 
+        scanStatusLabel.setText("Scanning...");
+
         HostScanTask task =
                 new HostScanTask(adapter);
 
@@ -290,6 +299,7 @@ public class HostsView extends BorderPane {
 
             loadingBox.setVisible(false);
             scanButton.setDisable(false);
+            scanStatusLabel.setText("Scan complete");
         });
 
         task.setOnFailed(event -> {
