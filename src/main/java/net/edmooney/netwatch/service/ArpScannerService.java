@@ -47,10 +47,13 @@ public class ArpScannerService {
             localHostName = "This PC";
         }
 
+        String localMacAddress =
+                getLocalMacAddress(localIp);
+
         hosts.add(new Host(
                 localIp,
                 localHostName,
-                "",
+                localMacAddress,
                 "Local",
                 "This PC",
                 true
@@ -110,7 +113,8 @@ public class ArpScannerService {
                     continue;
                 }
 
-                String macAddress = parts[1];
+                String macAddress =
+                        vendorService.format(parts[1]);
 
                 String hostName =
                         hostNameResolver.resolve(ip);
@@ -136,5 +140,45 @@ public class ArpScannerService {
         }
 
         return hosts;
+    }
+
+    private String getLocalMacAddress(String localIp) {
+
+        try {
+            InetAddress address =
+                    InetAddress.getByName(localIp);
+
+            java.net.NetworkInterface networkInterface =
+                    java.net.NetworkInterface.getByInetAddress(address);
+
+            if (networkInterface == null) {
+                return "";
+            }
+
+            byte[] mac =
+                    networkInterface.getHardwareAddress();
+
+            if (mac == null) {
+                return "";
+            }
+
+            StringBuilder result = new StringBuilder();
+
+            for (int i = 0; i < mac.length; i++) {
+
+                if (i > 0) {
+                    result.append("-");
+                }
+
+                result.append(
+                        String.format("%02X", mac[i])
+                );
+            }
+
+            return result.toString();
+
+        } catch (Exception e) {
+            return "";
+        }
     }
 }

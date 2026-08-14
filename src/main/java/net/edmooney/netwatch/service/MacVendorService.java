@@ -26,4 +26,28 @@ public class MacVendorService {
 
         return VENDORS.getOrDefault(prefix, "Unknown");
     }
+
+    public String format(String macAddress) {
+
+        if (macAddress == null || macAddress.isBlank()) {
+            return "";
+        }
+
+        String normalized = macAddress
+                .replace("-", "")
+                .replace(":", "")
+                .replace(".", "")
+                .toUpperCase();
+
+        if (normalized.length() != 12) {
+            return macAddress;
+        }
+
+        return normalized.substring(0, 2) + "-"
+                + normalized.substring(2, 4) + "-"
+                + normalized.substring(4, 6) + "-"
+                + normalized.substring(6, 8) + "-"
+                + normalized.substring(8, 10) + "-"
+                + normalized.substring(10, 12);
+    }
 }
