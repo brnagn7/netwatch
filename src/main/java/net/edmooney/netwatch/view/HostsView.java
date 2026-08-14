@@ -190,43 +190,44 @@ public class HostsView extends BorderPane {
 
         table.getSortOrder().add(ipColumn);
 
-        table.setOnMouseClicked(
-                (MouseEvent event) -> {
+        table.setOnMouseClicked(event -> {
 
-                    if (event.getClickCount() == 2) {
+            Host selectedHost =
+                    table.getSelectionModel()
+                            .getSelectedItem();
 
-                        Host selectedHost =
-                                table.getSelectionModel()
-                                        .getSelectedItem();
+            if (selectedHost == null) {
+                return;
+            }
 
-                        if (selectedHost != null) {
+            System.out.println(
+                    "Selected host: " +
+                            selectedHost.getIpAddress()
+            );
 
-                            HostDetailsView details =
-                                    new HostDetailsView(
-                                            selectedHost
-                                    );
+            if (event.getClickCount() == 2) {
 
-                            Stage stage =
-                                    new Stage();
+                HostDetailsView details =
+                        new HostDetailsView(selectedHost);
 
-                            stage.setTitle(
-                                    "Host Details - " +
-                                            selectedHost.getIpAddress()
-                            );
+                Stage stage = new Stage();
 
-                            stage.setScene(
-                                    new Scene(
-                                            details,
-                                            500,
-                                            350
-                                    )
-                            );
+                stage.setTitle(
+                        "Host Details - " +
+                                selectedHost.getIpAddress()
+                );
 
-                            stage.show();
-                        }
-                    }
-                }
-        );
+                stage.setScene(
+                        new Scene(
+                                details,
+                                500,
+                                350
+                        )
+                );
+
+                stage.show();
+            }
+        });
     }
 
     private void scanHosts() {
