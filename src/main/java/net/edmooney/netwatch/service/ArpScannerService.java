@@ -4,6 +4,7 @@ import net.edmooney.netwatch.model.Host;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +12,9 @@ public class ArpScannerService {
 
     private final MacVendorService vendorService =
             new MacVendorService();
+
+    private final HostNameResolver hostNameResolver =
+            new HostNameResolver();
 
     private String determineDeviceType(
             String ip,
@@ -31,12 +35,14 @@ public class ArpScannerService {
     public List<Host> scan(String localIp) {
 
         List<Host> hosts = new ArrayList<>();
+
         String localHostName;
 
         try {
-            localHostName = java.net.InetAddress
+            localHostName = InetAddress
                     .getLocalHost()
                     .getHostName();
+
         } catch (Exception e) {
             localHostName = "This PC";
         }
@@ -52,11 +58,15 @@ public class ArpScannerService {
 
         try {
 
-            Process process = new ProcessBuilder("arp", "-a").start();
+            Process process =
+                    new ProcessBuilder("arp", "-a").start();
 
-            BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream())
-            );
+            BufferedReader reader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    process.getInputStream()
+                            )
+                    );
 
             String line;
             boolean inCorrectInterface = false;
@@ -67,7 +77,9 @@ public class ArpScannerService {
 
                 if (line.startsWith("Interface:")) {
 
-                    inCorrectInterface = line.contains(localIp);
+                    inCorrectInterface =
+                            line.contains(localIp);
+
                     continue;
                 }
 
@@ -82,44 +94,41 @@ public class ArpScannerService {
 
                 String[] parts = line.split("\\s+");
 
-                if (parts.length >= 3) {
-
-                    String ip = parts[0];
-
-                    if (ip.endsWith(".255")) {
-                        continue;
-                    }
-
-                    if (ip.startsWith("224.")
-                            || ip.startsWith("239.")
-                            || ip.equals("255.255.255.255")) {
-                        continue;
-                    }
-
-                    String hostName;
-
-                    try {
-                        hostName = java.net.InetAddress
-                                .getByName(ip)
-                                .getCanonicalHostName();
-
-                    } catch (Exception e) {
-                        hostName = "";
-                    }
-
-                    String macAddress = parts[1];
-
-                    String vendor = vendorService.lookup(macAddress);
-
-                    hosts.add(new Host(
-                            ip,
-                            hostName,
-                            macAddress,
-                            vendor,
-                            determineDeviceType(ip, localIp),
-                            true
-                    ));
+                if (parts.length < 3) {
+                    continue;
                 }
+
+                String ip = parts[0];
+
+                if (ip.endsWith(".255")) {
+                    continue;
+                }
+
+                if (ip.startsWith("224.")
+                        || ip.startsWith("239.")
+                        || ip.equals("255.255.255.255")) {
+                    continue;
+                }
+
+                String macAddress = parts[1];
+
+                String hostName =
+                        hostNameResolver.resolve(ip);
+
+                String vendor =
+                        vendorService.lookup(macAddress);
+
+                hosts.add(new Host(
+                        ip,
+                        hostName,
+                        macAddress,
+                        vendor,
+                        determineDeviceType(
+                                ip,
+                                localIp
+                        ),
+                        true
+                ));
             }
 
         } catch (Exception e) {
