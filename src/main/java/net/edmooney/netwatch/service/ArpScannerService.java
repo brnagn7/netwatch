@@ -113,8 +113,10 @@ public class ArpScannerService {
                     continue;
                 }
 
-                String macAddress =
-                        vendorService.format(parts[1]);
+                String macAddress = vendorService.format(parts[1]);
+
+                boolean online =
+                        parts[2].equalsIgnoreCase("dynamic");
 
                 String hostName =
                         hostNameResolver.resolve(ip);
@@ -131,7 +133,7 @@ public class ArpScannerService {
                                 ip,
                                 localIp
                         ),
-                        true
+                        online
                 ));
             }
 

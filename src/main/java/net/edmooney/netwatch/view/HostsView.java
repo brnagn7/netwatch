@@ -9,31 +9,55 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
 import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.Host;
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.service.HostScanTask;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+
 import java.time.Duration;
 import java.time.Instant;
-
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class HostsView extends BorderPane {
 
     private final NetWatchController controller;
+
     private final TableView<Host> table = new TableView<>();
-    private final ProgressIndicator spinner = new ProgressIndicator();
-    private final Label scanningLabel = new Label("Scanning network...");
-    private final Label title = new Label("Connected Hosts");
-    private final Button scanButton = new Button("Scan Again");
-    private final Label lastScanLabel = new Label("Last scan: Never");
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+
+    private final ProgressIndicator spinner =
+            new ProgressIndicator();
+
+    private final Label scanningLabel =
+            new Label("Scanning network...");
+
+    private final Label title =
+            new Label("Connected Hosts");
+
+    private final Button scanButton =
+            new Button("Scan Again");
+
+    private final Label lastScanLabel =
+            new Label("Last scan: Never");
+
+    private final DateTimeFormatter timeFormatter =
+            DateTimeFormatter.ofPattern("HH:mm:ss");
+
     private Instant scanStartTime;
+
+    private final VBox loadingBox =
+            new VBox(
+                    10,
+                    spinner,
+                    scanningLabel
+            );
 
     public HostsView(NetWatchController controller) {
 
@@ -44,7 +68,9 @@ public class HostsView extends BorderPane {
         title.getStyleClass().add("dashboard-title");
         lastScanLabel.getStyleClass().add("last-scan-label");
 
-        scanButton.setOnAction(event -> scanHosts());
+        scanButton.setOnAction(event ->
+                scanHosts()
+        );
 
         HBox header = new HBox(
                 15,
@@ -71,13 +97,9 @@ public class HostsView extends BorderPane {
                 "scanning-label"
         );
 
-        VBox loadingBox = new VBox(
-                10,
-                spinner,
-                scanningLabel
-        );
-
         loadingBox.setAlignment(Pos.CENTER);
+
+        loadingBox.setMouseTransparent(true);
 
         StackPane content = new StackPane(
                 table,
@@ -117,6 +139,8 @@ public class HostsView extends BorderPane {
                 new PropertyValueFactory<>("macAddress")
         );
 
+        macColumn.setMinWidth(180);
+
         TableColumn<Host, String> vendorColumn =
                 new TableColumn<>("Vendor");
 
@@ -125,8 +149,6 @@ public class HostsView extends BorderPane {
         );
 
         vendorColumn.setMinWidth(180);
-
-        macColumn.setMinWidth(180);
 
         TableColumn<Host, String> deviceTypeColumn =
                 new TableColumn<>("Device Type");
@@ -160,15 +182,55 @@ public class HostsView extends BorderPane {
         );
 
         table.getSortOrder().add(ipColumn);
+
+        table.setOnMouseClicked(
+                (MouseEvent event) -> {
+
+                    if (event.getClickCount() == 2) {
+
+                        Host selectedHost =
+                                table.getSelectionModel()
+                                        .getSelectedItem();
+
+                        if (selectedHost != null) {
+
+                            HostDetailsView details =
+                                    new HostDetailsView(
+                                            selectedHost
+                                    );
+
+                            Stage stage =
+                                    new Stage();
+
+                            stage.setTitle(
+                                    "Host Details - " +
+                                            selectedHost.getIpAddress()
+                            );
+
+                            stage.setScene(
+                                    new Scene(
+                                            details,
+                                            500,
+                                            350
+                                    )
+                            );
+
+                            stage.show();
+                        }
+                    }
+                }
+        );
     }
 
     private void scanHosts() {
 
-        NetworkAdapter adapter = controller.getSelectedMonitoringAdapter();
+        NetworkAdapter adapter =
+                controller.getSelectedMonitoringAdapter();
 
         if (adapter == null) {
 
-            spinner.setVisible(false);
+            loadingBox.setVisible(false);
+
             scanningLabel.setText(
                     "No network adapter selected."
             );
@@ -178,10 +240,16 @@ public class HostsView extends BorderPane {
 
         table.getItems().clear();
 
-        spinner.setVisible(true);
-        scanningLabel.setText("Scanning network...");
+        loadingBox.setVisible(true);
+
+        scanningLabel.setText(
+                "Scanning network..."
+        );
+
         scanButton.setDisable(true);
+
         scanStartTime = Instant.now();
+
         HostScanTask task =
                 new HostScanTask(adapter);
 
@@ -198,42 +266,50 @@ public class HostsView extends BorderPane {
             );
 
             table.sort();
-            lastScanLabel.setText(
-                    "Last scan: " +
-                            LocalDateTime.now().format(timeFormatter)
-            );
+
             long milliseconds =
                     Duration.between(
                             scanStartTime,
                             Instant.now()
                     ).toMillis();
 
-            double seconds = milliseconds / 1000.0;
+            double seconds =
+                    milliseconds / 1000.0;
 
             lastScanLabel.setText(
                     "Last scan: " +
-                            LocalDateTime.now().format(timeFormatter) +
+                            LocalDateTime.now()
+                                    .format(timeFormatter) +
                             "  |  Duration: " +
-                            String.format("%.1f", seconds) +
+                            String.format(
+                                    "%.1f",
+                                    seconds
+                            ) +
                             " sec"
             );
-            spinner.setVisible(false);
+
+            loadingBox.setVisible(false);
             scanButton.setDisable(false);
         });
 
         task.setOnFailed(event -> {
 
-            spinner.setVisible(false);
+            loadingBox.setVisible(false);
             scanButton.setDisable(false);
 
             scanningLabel.setText(
                     "Host scan failed."
             );
 
-            task.getException().printStackTrace();
+            if (task.getException() != null) {
+                task.getException()
+                        .printStackTrace();
+            }
         });
 
-        Thread thread = new Thread(task);
+        Thread thread =
+                new Thread(task);
+
         thread.setDaemon(true);
         thread.start();
     }
