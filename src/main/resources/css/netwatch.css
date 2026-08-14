@@ -123,3 +123,9 @@
 .sidebar-button:pressed {
     -fx-background-color: #4b4b4b;
 }
+
+.last-scan-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #888888;
+    -fx-padding: 0 0 0 10px;
+}

@@ -17,6 +17,10 @@ import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.Host;
 import net.edmooney.netwatch.model.NetworkAdapter;
 import net.edmooney.netwatch.service.HostScanTask;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.Duration;
+import java.time.Instant;
 
 
 public class HostsView extends BorderPane {
@@ -27,6 +31,9 @@ public class HostsView extends BorderPane {
     private final Label scanningLabel = new Label("Scanning network...");
     private final Label title = new Label("Connected Hosts");
     private final Button scanButton = new Button("Scan Again");
+    private final Label lastScanLabel = new Label("Last scan: Never");
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+    private Instant scanStartTime;
 
     public HostsView(NetWatchController controller) {
 
@@ -35,13 +42,15 @@ public class HostsView extends BorderPane {
         setPadding(new Insets(20));
 
         title.getStyleClass().add("dashboard-title");
+        lastScanLabel.getStyleClass().add("last-scan-label");
 
         scanButton.setOnAction(event -> scanHosts());
 
         HBox header = new HBox(
                 15,
                 title,
-                scanButton
+                scanButton,
+                lastScanLabel
         );
 
         header.setAlignment(Pos.CENTER_LEFT);
@@ -155,8 +164,7 @@ public class HostsView extends BorderPane {
 
     private void scanHosts() {
 
-        NetworkAdapter adapter =
-                controller.getSelectedMonitoringAdapter();
+        NetworkAdapter adapter = controller.getSelectedMonitoringAdapter();
 
         if (adapter == null) {
 
@@ -173,7 +181,7 @@ public class HostsView extends BorderPane {
         spinner.setVisible(true);
         scanningLabel.setText("Scanning network...");
         scanButton.setDisable(true);
-
+        scanStartTime = Instant.now();
         HostScanTask task =
                 new HostScanTask(adapter);
 
@@ -190,7 +198,25 @@ public class HostsView extends BorderPane {
             );
 
             table.sort();
+            lastScanLabel.setText(
+                    "Last scan: " +
+                            LocalDateTime.now().format(timeFormatter)
+            );
+            long milliseconds =
+                    Duration.between(
+                            scanStartTime,
+                            Instant.now()
+                    ).toMillis();
 
+            double seconds = milliseconds / 1000.0;
+
+            lastScanLabel.setText(
+                    "Last scan: " +
+                            LocalDateTime.now().format(timeFormatter) +
+                            "  |  Duration: " +
+                            String.format("%.1f", seconds) +
+                            " sec"
+            );
             spinner.setVisible(false);
             scanButton.setDisable(false);
         });
