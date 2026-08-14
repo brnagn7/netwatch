@@ -59,9 +59,20 @@ public class ArpScannerService {
                         continue;
                     }
 
+                    String hostName;
+
+                    try {
+                        hostName = java.net.InetAddress
+                                .getByName(ip)
+                                .getCanonicalHostName();
+
+                    } catch (Exception e) {
+                        hostName = "";
+                    }
+
                     hosts.add(new Host(
                             ip,
-                            "",
+                            hostName,
                             parts[1],
                             true
                     ));

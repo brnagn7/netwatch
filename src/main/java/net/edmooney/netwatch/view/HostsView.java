@@ -2,11 +2,14 @@ package net.edmooney.netwatch.view;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import net.edmooney.netwatch.controller.NetWatchController;
 import net.edmooney.netwatch.model.Host;
 import net.edmooney.netwatch.model.NetworkAdapter;
@@ -16,34 +19,50 @@ public class HostsView extends BorderPane {
 
     public HostsView(NetWatchController controller) {
 
-        System.out.println("HostsView created");
-
         setPadding(new Insets(20));
 
         Label title = new Label("Connected Hosts");
         title.getStyleClass().add("dashboard-title");
 
         TableView<Host> table = new TableView<>();
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
-        table.setPlaceholder(new Label("Scanning network..."));
+        table.setColumnResizePolicy(
+                TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS
+        );
 
-        TableColumn<Host, String> ipColumn = new TableColumn<>("IP Address");
-        ipColumn.setCellValueFactory(new PropertyValueFactory<>("ipAddress"));
+        table.setPlaceholder(
+                new Label("No hosts discovered.")
+        );
+
+        TableColumn<Host, String> ipColumn =
+                new TableColumn<>("IP Address");
+
+        ipColumn.setCellValueFactory(
+                new PropertyValueFactory<>("ipAddress")
+        );
+
         ipColumn.setMinWidth(180);
 
         TableColumn<Host, String> hostColumn =
                 new TableColumn<>("Host Name");
+
         hostColumn.setCellValueFactory(
-                new PropertyValueFactory<>("hostName"));
+                new PropertyValueFactory<>("hostName")
+        );
+
         hostColumn.setMinWidth(220);
 
         TableColumn<Host, String> macColumn =
                 new TableColumn<>("MAC Address");
+
         macColumn.setCellValueFactory(
-                new PropertyValueFactory<>("macAddress"));
+                new PropertyValueFactory<>("macAddress")
+        );
+
         macColumn.setMinWidth(180);
 
-        TableColumn<Host, String> statusColumn = new TableColumn<>("Status");
+        TableColumn<Host, String> statusColumn =
+                new TableColumn<>("Status");
+
         statusColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(
                         cellData.getValue().isOnline()
@@ -51,6 +70,7 @@ public class HostsView extends BorderPane {
                                 : "Offline"
                 )
         );
+
         statusColumn.setMinWidth(120);
 
         table.getColumns().addAll(
@@ -60,49 +80,84 @@ public class HostsView extends BorderPane {
                 statusColumn
         );
 
-        ipColumn.setSortable(true);
-        hostColumn.setSortable(true);
-        statusColumn.setSortable(true);
-
         table.getSortOrder().add(ipColumn);
 
-        NetworkAdapter adapter = controller.getSelectedMonitoringAdapter();
+        ProgressIndicator spinner =
+                new ProgressIndicator();
 
-        if (adapter != null) {
+        spinner.setPrefSize(45, 45);
 
-            System.out.println("Scanning subnet from: " + adapter.getIpv4Address());
+        Label scanningLabel =
+                new Label("Scanning network...");
 
-            HostScanTask task = new HostScanTask(adapter);
+        scanningLabel.getStyleClass().add(
+                "scanning-label"
+        );
 
-            task.setOnRunning(event ->
-                    System.out.println("Task running"));
+        javafx.scene.layout.VBox loadingBox =
+                new javafx.scene.layout.VBox(
+                        10,
+                        spinner,
+                        scanningLabel
+                );
 
-            task.setOnSucceeded(event -> {
-                System.out.println("Task succeeded");
-                table.getItems().setAll(task.getValue());
-                title.setText("Connected Hosts (" + task.getValue().size() + ")");
-                table.sort();
-            });
+        loadingBox.setAlignment(Pos.CENTER);
 
-            task.setOnFailed(event -> {
-                System.out.println("Task failed");
-
-                if (task.getException() != null) {
-                    task.getException().printStackTrace();
-                }
-            });
-
-            Thread thread = new Thread(task);
-            thread.setDaemon(true);
-            thread.start();
-
-        } else {
-
-            System.out.println("No adapter selected.");
-            table.setPlaceholder(new Label("No network adapter selected."));
-        }
+        StackPane content = new StackPane(
+                table,
+                loadingBox
+        );
 
         setTop(title);
-        setCenter(table);
+        setCenter(content);
+
+        NetworkAdapter adapter =
+                controller.getSelectedMonitoringAdapter();
+
+        if (adapter == null) {
+
+            loadingBox.setVisible(false);
+
+            table.setPlaceholder(
+                    new Label("No network adapter selected.")
+            );
+
+            return;
+        }
+
+        HostScanTask task =
+                new HostScanTask(adapter);
+
+        task.setOnSucceeded(event -> {
+
+            table.getItems().setAll(
+                    task.getValue()
+            );
+
+            title.setText(
+                    "Connected Hosts (" +
+                            task.getValue().size() +
+                            ")"
+            );
+
+            table.sort();
+
+            loadingBox.setVisible(false);
+        });
+
+        task.setOnFailed(event -> {
+
+            loadingBox.setVisible(false);
+
+            table.setPlaceholder(
+                    new Label("Host scan failed.")
+            );
+
+            task.getException().printStackTrace();
+        });
+
+        Thread thread = new Thread(task);
+        thread.setDaemon(true);
+        thread.start();
     }
 }
