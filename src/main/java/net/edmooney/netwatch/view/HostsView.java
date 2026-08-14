@@ -119,6 +119,15 @@ public class HostsView extends BorderPane {
 
         macColumn.setMinWidth(180);
 
+        TableColumn<Host, String> deviceTypeColumn =
+                new TableColumn<>("Device Type");
+
+        deviceTypeColumn.setCellValueFactory(
+                new PropertyValueFactory<>("deviceType")
+        );
+
+        deviceTypeColumn.setMinWidth(140);
+
         TableColumn<Host, String> statusColumn =
                 new TableColumn<>("Status");
 
@@ -137,6 +146,7 @@ public class HostsView extends BorderPane {
                 hostColumn,
                 macColumn,
                 vendorColumn,
+                deviceTypeColumn,
                 statusColumn
         );
 

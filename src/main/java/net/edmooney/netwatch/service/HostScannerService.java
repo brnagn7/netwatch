@@ -7,10 +7,13 @@ import java.util.List;
 
 public class HostScannerService {
 
-    public List<Host> scan(String subnet) {
+    public List<Host> scan(
+            String subnet,
+            String localIp
+    ) {
 
-        System.out.println("HostScannerService.scan()");
-
-        return new ArpScannerService().scan(subnet + "175");
+        return new ArpScannerService().scan(
+                localIp
+        );
     }
 }

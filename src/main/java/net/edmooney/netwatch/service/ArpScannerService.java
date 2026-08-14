@@ -12,9 +12,43 @@ public class ArpScannerService {
     private final MacVendorService vendorService =
             new MacVendorService();
 
-    public List<Host> scan(String interfaceIp) {
+    private String determineDeviceType(
+            String ip,
+            String localIp
+    ) {
+
+        if (ip.equals(localIp)) {
+            return "This PC";
+        }
+
+        if (ip.endsWith(".1")) {
+            return "Router / Gateway";
+        }
+
+        return "Unknown";
+    }
+
+    public List<Host> scan(String localIp) {
 
         List<Host> hosts = new ArrayList<>();
+        String localHostName;
+
+        try {
+            localHostName = java.net.InetAddress
+                    .getLocalHost()
+                    .getHostName();
+        } catch (Exception e) {
+            localHostName = "This PC";
+        }
+
+        hosts.add(new Host(
+                localIp,
+                localHostName,
+                "",
+                "Local",
+                "This PC",
+                true
+        ));
 
         try {
 
@@ -33,7 +67,7 @@ public class ArpScannerService {
 
                 if (line.startsWith("Interface:")) {
 
-                    inCorrectInterface = line.contains(interfaceIp);
+                    inCorrectInterface = line.contains(localIp);
                     continue;
                 }
 
@@ -82,6 +116,7 @@ public class ArpScannerService {
                             hostName,
                             macAddress,
                             vendor,
+                            determineDeviceType(ip, localIp),
                             true
                     ));
                 }
