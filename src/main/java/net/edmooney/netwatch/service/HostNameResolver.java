@@ -2,63 +2,100 @@ package net.edmooney.netwatch.service;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.*;
 
 public class HostNameResolver {
 
-    private final ExecutorService executor =
-            Executors.newFixedThreadPool(10);
+    private static final int THREADS = 20;
 
-    public String resolve(String ip) {
+    private static final Map<String, String> cache =
+            new ConcurrentHashMap<>();
 
-        String hostName = resolveWithJava(ip);
+    public Map<String, String> resolveAll(
+            List<String> ipAddresses
+    ) {
 
-        if (!hostName.isBlank()) {
-            return hostName;
-        }
+        Map<String, String> results =
+                new ConcurrentHashMap<>();
 
-        return resolveWithWindowsPing(ip);
-    }
+        ExecutorService executor =
+                Executors.newFixedThreadPool(
+                        THREADS
+                );
 
-    private String resolveWithJava(String ip) {
+        List<Callable<Void>> tasks =
+                ipAddresses.stream()
+                        .map(ip -> (Callable<Void>) () -> {
+
+                            String hostName;
+
+                            if (cache.containsKey(ip)) {
+
+                                hostName =
+                                        cache.get(ip);
+
+                            } else {
+
+                                hostName =
+                                        resolveWithWindowsPing(ip);
+
+                                cache.put(
+                                        ip,
+                                        hostName
+                                );
+                            }
+
+                            results.put(
+                                    ip,
+                                    hostName
+                            );
+
+                            return null;
+                        })
+                        .toList();
 
         try {
-            Future<String> future = executor.submit(() ->
-                    InetAddress
-                            .getByName(ip)
-                            .getCanonicalHostName()
+
+            executor.invokeAll(
+                    tasks,
+                    6,
+                    TimeUnit.SECONDS
             );
 
-            String hostName =
-                    future.get(1, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
 
-            if (hostName.equals(ip)) {
-                return "";
-            }
+            Thread.currentThread()
+                    .interrupt();
 
-            return hostName;
+        } finally {
 
-        } catch (Exception ignored) {
-            return "";
+            executor.shutdownNow();
         }
+
+        return new HashMap<>(results);
     }
 
-    private String resolveWithWindowsPing(String ip) {
+    private String resolveWithWindowsPing(
+            String ip
+    ) {
 
         try {
-            Process process = new ProcessBuilder(
-                    "ping",
-                    "-a",
-                    "-n",
-                    "1",
-                    "-w",
-                    "500",
-                    ip
-            ).start();
+
+            Process process =
+                    new ProcessBuilder(
+                            "ping",
+                            "-a",
+                            "-n",
+                            "1",
+                            "-w",
+                            "200",
+                            ip
+                    )
+                            .redirectErrorStream(true)
+                            .start();
 
             BufferedReader reader =
                     new BufferedReader(
@@ -69,23 +106,32 @@ public class HostNameResolver {
 
             String line;
 
-            while ((line = reader.readLine()) != null) {
+            while ((line =
+                    reader.readLine()) != null) {
 
                 line = line.trim();
 
-                if (!line.startsWith("Pinging ")) {
+                if (!line.startsWith(
+                        "Pinging "
+                )) {
                     continue;
                 }
 
-                int start = "Pinging ".length();
-                int bracket = line.indexOf(" [");
+                int start =
+                        "Pinging ".length();
+
+                int bracket =
+                        line.indexOf(" [");
 
                 if (bracket <= start) {
                     continue;
                 }
 
                 String hostName =
-                        line.substring(start, bracket).trim();
+                        line.substring(
+                                start,
+                                bracket
+                        ).trim();
 
                 if (!hostName.equals(ip)) {
                     return hostName;
@@ -96,9 +142,5 @@ public class HostNameResolver {
         }
 
         return "";
-    }
-
-    public void shutdown() {
-        executor.shutdownNow();
     }
 }

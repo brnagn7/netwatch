@@ -19,16 +19,34 @@ public class ArpScannerService {
     private final DeviceIdentificationService deviceIdentificationService =
             new DeviceIdentificationService();
 
+    private final SubnetProbeService subnetProbeService =
+            new SubnetProbeService();
+
     public List<Host> scan(String localIp) {
 
         List<Host> hosts = new ArrayList<>();
 
+        long probeStart =
+                System.currentTimeMillis();
+
+        subnetProbeService.probe(localIp);
+
+        long probeDuration =
+                System.currentTimeMillis() - probeStart;
+
+        System.out.println(
+                "Subnet probe: " +
+                        probeDuration +
+                        " ms"
+        );
+
         String localHostName;
 
         try {
-            localHostName = InetAddress
-                    .getLocalHost()
-                    .getHostName();
+            localHostName =
+                    InetAddress
+                            .getLocalHost()
+                            .getHostName();
 
         } catch (Exception e) {
             localHostName = "This PC";
@@ -51,10 +69,22 @@ public class ArpScannerService {
                 true
         ));
 
+        long arpStart =
+                System.currentTimeMillis();
+
+        List<String> discoveredIps =
+                new ArrayList<>();
+
+        List<String[]> discoveredData =
+                new ArrayList<>();
+
         try {
 
             Process process =
-                    new ProcessBuilder("arp", "-a").start();
+                    new ProcessBuilder(
+                            "arp",
+                            "-a"
+                    ).start();
 
             BufferedReader reader =
                     new BufferedReader(
@@ -83,17 +113,21 @@ public class ArpScannerService {
                 }
 
                 if (line.isBlank()
-                        || line.startsWith("Internet Address")) {
+                        || line.startsWith(
+                        "Internet Address"
+                )) {
                     continue;
                 }
 
-                String[] parts = line.split("\\s+");
+                String[] parts =
+                        line.split("\\s+");
 
                 if (parts.length < 3) {
                     continue;
                 }
 
-                String ip = parts[0];
+                String ip =
+                        parts[0];
 
                 if (ip.endsWith(".255")) {
                     continue;
@@ -101,64 +135,129 @@ public class ArpScannerService {
 
                 if (ip.startsWith("224.")
                         || ip.startsWith("239.")
-                        || ip.equals("255.255.255.255")) {
+                        || ip.equals(
+                        "255.255.255.255"
+                )) {
                     continue;
                 }
 
-                String macAddress = vendorService.format(parts[1]);
+                String macAddress =
+                        vendorService.format(
+                                parts[1]
+                        );
 
                 boolean online =
-                        parts[2].equalsIgnoreCase("dynamic");
+                        parts[2]
+                                .equalsIgnoreCase(
+                                        "dynamic"
+                                );
 
-                String hostName =
-                        hostNameResolver.resolve(ip);
+                discoveredIps.add(ip);
 
-                String vendor =
-                        vendorService.lookup(macAddress);
-
-                hosts.add(new Host(
-                        ip,
-                        hostName,
-                        macAddress,
-                        vendor,
-                        deviceIdentificationService.identify(
+                discoveredData.add(
+                        new String[]{
                                 ip,
-                                localIp,
-                                hostName,
-                                vendor
-                        ),
-                        online
-                ));
+                                macAddress,
+                                String.valueOf(online)
+                        }
+                );
             }
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        var hostNames =
+                hostNameResolver.resolveAll(
+                        discoveredIps
+                );
+
+        for (String[] data : discoveredData) {
+
+            String ip =
+                    data[0];
+
+            String macAddress =
+                    data[1];
+
+            boolean online =
+                    Boolean.parseBoolean(
+                            data[2]
+                    );
+
+            String hostName =
+                    hostNames.getOrDefault(
+                            ip,
+                            ""
+                    );
+
+            String vendor =
+                    vendorService.lookup(
+                            macAddress
+                    );
+
+            hosts.add(new Host(
+                    ip,
+                    hostName,
+                    macAddress,
+                    vendor,
+                    deviceIdentificationService.identify(
+                            ip,
+                            localIp,
+                            hostName,
+                            vendor
+                    ),
+                    online
+            ));
+        }
+
+        long arpDuration =
+                System.currentTimeMillis() - arpStart;
+
+        System.out.println(
+                "ARP processing: " +
+                        arpDuration +
+                        " ms"
+        );
+
+        System.out.println(
+                "Hosts discovered: " +
+                        hosts.size()
+        );
+
         return hosts;
     }
 
-    private String getLocalMacAddress(String localIp) {
+    private String getLocalMacAddress(
+            String localIp
+    ) {
 
         try {
             InetAddress address =
-                    InetAddress.getByName(localIp);
+                    InetAddress.getByName(
+                            localIp
+                    );
 
             java.net.NetworkInterface networkInterface =
-                    java.net.NetworkInterface.getByInetAddress(address);
+                    java.net.NetworkInterface
+                            .getByInetAddress(
+                                    address
+                            );
 
             if (networkInterface == null) {
                 return "";
             }
 
             byte[] mac =
-                    networkInterface.getHardwareAddress();
+                    networkInterface
+                            .getHardwareAddress();
 
             if (mac == null) {
                 return "";
             }
 
-            StringBuilder result = new StringBuilder();
+            StringBuilder result =
+                    new StringBuilder();
 
             for (int i = 0; i < mac.length; i++) {
 
@@ -167,7 +266,10 @@ public class ArpScannerService {
                 }
 
                 result.append(
-                        String.format("%02X", mac[i])
+                        String.format(
+                                "%02X",
+                                mac[i]
+                        )
                 );
             }
 
