@@ -16,21 +16,8 @@ public class ArpScannerService {
     private final HostNameResolver hostNameResolver =
             new HostNameResolver();
 
-    private String determineDeviceType(
-            String ip,
-            String localIp
-    ) {
-
-        if (ip.equals(localIp)) {
-            return "This PC";
-        }
-
-        if (ip.endsWith(".1")) {
-            return "Router / Gateway";
-        }
-
-        return "Unknown";
-    }
+    private final DeviceIdentificationService deviceIdentificationService =
+            new DeviceIdentificationService();
 
     public List<Host> scan(String localIp) {
 
@@ -55,7 +42,12 @@ public class ArpScannerService {
                 localHostName,
                 localMacAddress,
                 "Local",
-                "This PC",
+                deviceIdentificationService.identify(
+                        localIp,
+                        localIp,
+                        localHostName,
+                        "Local"
+                ),
                 true
         ));
 
@@ -129,9 +121,11 @@ public class ArpScannerService {
                         hostName,
                         macAddress,
                         vendor,
-                        determineDeviceType(
+                        deviceIdentificationService.identify(
                                 ip,
-                                localIp
+                                localIp,
+                                hostName,
+                                vendor
                         ),
                         online
                 ));
